@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
@@ -200,7 +199,7 @@
             </main>
 
             <div class="absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-up z-40">
-                <button onclick="processCheckout()" class="w-full bg-of-blue hover:bg-of-darkBlue active:scale-[0.98] text-white rounded-2xl py-4 px-4 font-black text-lg transition-all flex items-center justify-center gap-2 btn-pulse shadow-lg">
+                <button onclick="processCheckout()" id="btn-checkout" class="w-full bg-of-blue hover:bg-of-darkBlue disabled:bg-of-gray disabled:opacity-70 active:scale-[0.98] text-white rounded-2xl py-4 px-4 font-black text-lg transition-all flex items-center justify-center gap-2 btn-pulse shadow-lg">
                     <i class="fa-brands fa-pix text-xl mr-1"></i>
                     <span id="cta-text">DESBLOQUEAR POR R$ 18,99</span>
                 </button>
@@ -280,31 +279,37 @@
     </div>
 
     <script>
-        const PUSHINPAY_API_URL = 'https://api.pushinpay.com.br/api';
-        const PUSHINPAY_TOKEN = '67438|CLcA0BGtDBDaCFerhZBQ8nqSgH0VwAHOoFwYMveofe5332f9';
+        // Configurações da API HotTrack
+        const HOTTRACK_API_URL = 'https://hot-track.com';
+        const HOTTRACK_TOKEN = 'b8d5ca45-58d0-47be-87b2-367038994c6b';
         
         let currentPrice = 18.99; 
         let currentTransactionId = null; 
         let offerStep = 0; 
+        let isProcessing = false;
         
-        // Cascata reduzida para um único downsell hiper agressivo
         const offerCascade = [13.99];
+
+        // --- SISTEMA DE CAPTURA DE PARÂMETROS DA URL (WEB) ---
+        function getUrlParams() {
+            return new URLSearchParams(window.location.search);
+        }
+        
+        // A lógica do redirecionador envia o click_id no parâmetro "start" quando redireciona pro checkout web.
+        // O fallback abaixo captura de outras fontes diretas caso necessário.
+        const globalClickId = getUrlParams().get('start') || getUrlParams().get('click_id') || getUrlParams().get('k_click_id') || '';
 
         document.addEventListener('DOMContentLoaded', () => {
             setupOneTimeVideos();
             setTimeout(initSocialProof, 5000);
             armBackRedirect();
-
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.ready();
-                if (Telegram.WebApp.BackButton) {
-                    Telegram.WebApp.BackButton.show();
-                    Telegram.WebApp.onEvent('backButtonClicked', function() {
-                        triggerNextOffer();
-                    });
+            
+            window.addEventListener('beforeunload', function (e) {
+                if (offerStep === 0 && !isProcessing) {
+                    e.preventDefault();
+                    e.returnValue = '';
                 }
-                Telegram.WebApp.isClosingConfirmationEnabled = true;
-            }
+            });
         });
 
         function setupOneTimeVideos() {
@@ -357,9 +362,7 @@
             }, 18000); 
         }
 
-        // --- SISTEMA DE ATUALIZAÇÃO VISUAL DO PACOTE ---
         function updatePackageUI(price) {
-            // Nenhuma funcionalidade é ocultada ("hide: []") e os vídeos continuam os mesmos para remover objeções
             const specs = {
                 18.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP Completo 🔞", old: "69,90" },
                 13.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP (Com Desconto) 🔥", old: "18,99" }
@@ -385,7 +388,6 @@
             });
         }
 
-        // --- SISTEMA DE RETENÇÃO (1 ÚNICO DOWNSELL AGRESSIVO) ---
         function armBackRedirect() {
             for (let i = 0; i < offerCascade.length + 1; i++) {
                 window.history.pushState({ page: 'retention' }, '', window.location.href);
@@ -397,8 +399,6 @@
 
         function triggerNextOffer() {
             if (offerStep >= offerCascade.length) {
-                alert("Você perdeu a oferta. A página será recarregada.");
-                window.location.reload(); 
                 return;
             }
 
@@ -416,7 +416,6 @@
             document.getElementById('offer-old-price').innerText = `R$ ${oldPrice.toFixed(2).replace('.', ',')}`;
             document.getElementById('offer-new-price').innerText = `R$ ${price.toFixed(2).replace('.', ',')}`;
             
-            // Modal único hiper agressivo (Estilo "Última Chance" em vermelho) SEM REMOVER BENEFÍCIOS
             if (price === 13.99) {
                 titleEl.innerText = "ESPERA AÍ!";
                 titleEl.classList.replace('text-gray-900', 'text-red-600');
@@ -449,7 +448,6 @@
             setTimeout(() => document.getElementById('dynamic-offer-overlay').classList.add('hidden'), 300);
             
             currentPrice = newPrice;
-            
             updatePackageUI(newPrice);
 
             document.getElementById('cta-text').innerHTML = `DESBLOQUEAR POR R$ ${currentPrice.toFixed(2).replace('.', ',')}`;
@@ -458,37 +456,55 @@
             processCheckout(); 
         }
 
-        // --- INTEGRAÇÃO PUSHINPAY ---
+        // --- INTEGRAÇÃO HOTTRACK API ---
         async function processCheckout() {
+            if (isProcessing) return;
+            isProcessing = true;
+            
             const btnSpan = document.getElementById('cta-text');
             const originalText = btnSpan.innerHTML;
+            const btnCheckout = document.getElementById('btn-checkout');
             
             try {
                 btnSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Gerando PIX...';
+                btnCheckout.disabled = true;
+                
                 const valueCents = Math.round(currentPrice * 100);
+                const click_id_final = globalClickId || "lead_padrao_" + Math.random().toString(36).substring(2, 7);
+                const productName = "MiniApp";
 
-                const response = await fetch(`${PUSHINPAY_API_URL}/pix/cashIn`, {
+                const response = await fetch(`${HOTTRACK_API_URL}/api/pix/generate`, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json', 'Accept': 'application/json',
-                        'Authorization': `Bearer ${PUSHINPAY_TOKEN}` 
+                        'Content-Type': 'application/json', 
+                        'Accept': 'application/json',
+                        'x-api-key': HOTTRACK_TOKEN 
                     },
-                    body: JSON.stringify({ value: valueCents })
+                    body: JSON.stringify({ 
+                        click_id: click_id_final,
+                        value_cents: valueCents,
+                        product: { name: productName }
+                    }) 
                 });
 
                 const data = await response.json();
-                const pixCode = data.qr_code || data.qr_code_text || data.brcode;
 
-                if (pixCode && data.id) {
-                    currentTransactionId = data.id; 
-                    document.getElementById('pix-code').value = pixCode;
-                    document.getElementById('pix-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(pixCode)}`;
+                if (response.ok && data.qr_code_text) {
+                    currentTransactionId = data.transaction_id || data.id; 
+                    
+                    document.getElementById('pix-code').value = data.qr_code_text;
+                    document.getElementById('pix-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.qr_code_text)}`;
                     openPixModal();
+                } else {
+                    throw new Error(data.message || "Falha na geração do PIX");
                 }
             } catch (error) {
+                console.error("Erro no processamento:", error);
                 alert("Erro ao processar o pagamento. Tente novamente em instantes.");
             } finally {
                 btnSpan.innerHTML = originalText;
+                btnCheckout.disabled = false;
+                setTimeout(() => { isProcessing = false; }, 1500);
             }
         }
 
@@ -500,28 +516,30 @@
 
             const btn = document.querySelector('button[onclick="verifyPaymentRedirect()"]');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg"></i> Verificando Pagamento...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg"></i> Verificando...';
             btn.disabled = true;
 
             try {
-                const response = await fetch(`${PUSHINPAY_API_URL}/transactions/${currentTransactionId}`, {
+                const response = await fetch(`${HOTTRACK_API_URL}/api/pix/status/${currentTransactionId}`, {
                     method: 'GET',
                     headers: { 
                         'Accept': 'application/json',
-                        'Authorization': `Bearer ${PUSHINPAY_TOKEN}` 
+                        'x-api-key': HOTTRACK_TOKEN 
                     }
                 });
                 
                 const data = await response.json();
 
                 if (data.status === 'paid' || data.status === 'approved') {
-                    // === REPASSE DE PARÂMETROS ADICIONADO AQUI ===
-                    // Leva o UTM, click_id e fbclid para a página de obrigado para o rastreio da venda bater 100%
+                    // Repassa todos os parâmetros (UTMs e click_id capturados no início)
                     window.location.href = "https://aprovadopagamentotele.netlify.app" + window.location.search;
+                } else if (data.status === 'expired') {
+                    alert("Este PIX já expirou. Feche a janela e gere um novo!");
                 } else {
                     alert("Ainda não identificamos o seu pagamento. O PIX pode levar alguns segundos para ser processado. Tente novamente em instantes!");
                 }
             } catch (error) {
+                console.error("Erro na verificação:", error);
                 alert("Erro ao conectar com o banco. Se você já pagou, aguarde alguns segundos e tente novamente.");
             } finally {
                 btn.innerHTML = originalText;
@@ -538,7 +556,9 @@
                 overlay.classList.replace('opacity-0', 'opacity-100');
                 modal.classList.add('slide-up');
             }, 10);
-            document.querySelectorAll('.preview-video').forEach(v => v.pause());
+            document.querySelectorAll('.preview-video').forEach(v => {
+                if (typeof v.pause === 'function') v.pause();
+            });
         }
 
         function closePixModal() {
