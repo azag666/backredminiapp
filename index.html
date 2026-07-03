@@ -92,7 +92,6 @@
     <div id="checkout-view" class="hidden w-full flex-col justify-center items-center relative min-h-screen text-of-text bg-gray-100">
         <div class="w-full max-w-md bg-white min-h-screen relative shadow-2xl flex flex-col overflow-hidden text-left">
             
-            <!-- Header com botão de voltar -->
             <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-of-border flex items-center px-4 py-3">
                 <button onclick="window.goBackToInsta()" class="text-of-text hover:text-of-blue transition-colors p-2 -ml-2">
                     <i class="fa-solid fa-arrow-left text-lg"></i>
@@ -100,7 +99,7 @@
                 <h1 class="font-bold text-lg ml-auto mr-auto tracking-tight uppercase text-of-blue flex items-center gap-2">
                     <i class="fa-solid fa-lock text-sm"></i> Checkout Seguro
                 </h1>
-                <div class="w-8"></div> <!-- Espaçador para centralizar o título -->
+                <div class="w-8"></div>
             </header>
 
             <main class="flex-1 overflow-y-auto pb-32">
@@ -133,8 +132,10 @@
                     </div>
                     
                     <p class="mt-3 text-sm text-of-text leading-relaxed font-medium">
-                        Sou uma ninfetinha bem safada e tenho varios videos pra você gozar 😈
-                        <strong class="text-green-600 block mt-1"><i class="fa-solid fa-unlock"></i> Liberado automaticamente nesta página após o pagamento.</strong>
+                        Sou uma ninfetinha bem safada e tenho varios videos pra você gozar 😈<br>
+                        18 Anos<br>
+                        <span id="checkout-location" class="text-blue-600 font-bold">📍 Brasil</span>
+                        <strong class="text-green-600 block mt-2"><i class="fa-solid fa-unlock"></i> Liberado automaticamente nesta página após o pagamento.</strong>
                     </p>
                 </div>
 
@@ -178,7 +179,6 @@
                         </div>
                     </div>
                     
-                    <!-- Área com o GIF de Prova -->
                     <div class="mt-4 mb-4 relative z-10">
                         <div class="rounded-2xl overflow-hidden border-2 border-of-blue shadow-[0_8px_30px_rgba(0,175,240,0.2)] relative bg-black">
                             <div class="absolute top-3 right-3 bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-lg animate-pulse z-20 uppercase tracking-wider flex items-center gap-1 shadow-lg">
@@ -242,7 +242,6 @@
                 </div>
             </main>
 
-            <!-- Rodapé CTA Checkout -->
             <div class="absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-up z-40">
                 <button onclick="processCheckout()" id="btn-checkout" class="w-full bg-of-blue hover:bg-of-darkBlue disabled:bg-of-gray disabled:opacity-70 active:scale-[0.98] text-white rounded-2xl py-4 px-4 font-black text-lg transition-all flex items-center justify-center gap-2 btn-pulse shadow-lg">
                     <i class="fa-brands fa-pix text-xl mr-1"></i>
@@ -250,7 +249,6 @@
                 </button>
             </div>
 
-            <!-- Prova Social -->
             <div id="social-proof" class="fixed top-4 right-4 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-lg rounded-xl p-3 flex items-center gap-3 z-50 hidden max-w-[280px]">
                 <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">
                     <i class="fa-solid fa-check text-lg"></i>
@@ -261,7 +259,6 @@
                 </div>
             </div>
 
-            <!-- Modal PIX HotTrack -->
             <div id="pix-modal-overlay" class="fixed inset-0 bg-black/60 z-50 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm" onclick="closePixModal()"></div>
             <div id="pix-modal" class="fixed bottom-0 left-0 w-full bg-white rounded-t-3xl z-50 hidden flex-col shadow-2xl max-h-[90vh] overflow-y-auto">
                 <div class="flex justify-center p-3">
@@ -299,7 +296,6 @@
                 </div>
             </div>
 
-            <!-- Modal Retenção (Dinâmico HotTrack) -->
             <div id="dynamic-offer-overlay" class="fixed inset-0 bg-gray-900/90 z-[200] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm flex items-center justify-center p-4">
                 <div class="bg-white rounded-[2rem] p-6 text-center max-w-sm w-full shadow-2xl scale-up relative overflow-hidden border border-gray-100">
                     
@@ -330,7 +326,7 @@
     <!-- SCRIPT REACT (INSTAGRAM APP COMPLETO)          -->
     <!-- ============================================== -->
     <script type="text/babel" data-type="module">
-        import React, { useState } from 'react';
+        import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
         import { 
           ChevronLeft, MoreHorizontal, Link as LinkIcon, PlayCircle, Grid3X3, 
@@ -342,14 +338,6 @@
           name: "Vitória 💖✨",
           avatar: "https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/gravida/IMG_1029.jpg",
           stats: { posts: "36", followers: "18.7K", following: "123" },
-          bio: {
-            mentions: "",
-            lines: [
-              "Criadora de Conteúdo 📸",
-              "Acesse meu VIP exclusivo 👇",
-              "Conteúdos diários sem censura 🔥"
-            ]
-          },
           link: { url: "javascript:void(0)", display: "onlyfans.com/vitoriaaa" },
           story: {
             image: "https://pub-165b12f7792f481faed1f61d81578b79.r2.dev/gravida/658922685_17943671829152626_8461647422046406575_n..webp",
@@ -377,6 +365,27 @@
           const [isStoryOpen, setIsStoryOpen] = useState(false);
           const [isFollowing, setIsFollowing] = useState(false);
           const [showMessageModal, setShowMessageModal] = useState(false);
+          const [userLocation, setUserLocation] = useState('📍 Localizando...');
+
+          // Script Dinâmico de Localização via IP
+          useEffect(() => {
+            fetch('https://ipapi.co/json/')
+              .then(res => res.json())
+              .then(data => {
+                if(data.city && data.region) {
+                  const locString = `📍 ${data.city} - ${data.region}`;
+                  setUserLocation(locString);
+                  // Atualiza também o Checkout
+                  const checkoutLocationEl = document.getElementById('checkout-location');
+                  if(checkoutLocationEl) checkoutLocationEl.innerText = locString;
+                } else {
+                  setUserLocation('📍 Brasil');
+                }
+              })
+              .catch(() => {
+                setUserLocation('📍 Brasil');
+              });
+          }, []);
 
           // Função para abrir o checkout na mesma página
           const handleVIPClick = (e) => {
@@ -508,8 +517,10 @@
 
                 <div className="flex flex-col gap-0.5 mb-4">
                   <h2 className="font-bold text-[15px]">{PROFILE_DATA.name}</h2>
-                  {PROFILE_DATA.bio.lines.map((line, index) => <p key={index} className="text-[15px]">{line}</p>)}
-                  <p className="text-gray-400 text-[15px] cursor-pointer">... mais</p>
+                  <p className="text-[15px] leading-snug">Sou uma ninfetinha bem safada e tenho varios videos pra você gozar 😈</p>
+                  <p className="text-[15px]">18 Anos</p>
+                  <p className="text-[15px] text-blue-100 font-semibold">{userLocation}</p>
+                  <p className="text-gray-400 text-[15px] cursor-pointer mt-1">... mais</p>
                   
                   <a href={PROFILE_DATA.link.url} onClick={handleVIPClick} className="flex items-center gap-1 mt-1 text-blue-200 text-[15px] font-medium hover:underline">
                     <LinkIcon size={16} className="-rotate-45" /> {PROFILE_DATA.link.display}
@@ -835,6 +846,7 @@
             }
         }
 
+        // REDIRECIONAMENTO KIRVANO APÓS SUCESSO
         async function verifyPaymentRedirect() {
             if (!currentTransactionId) {
                 alert("Nenhum PIX foi gerado ainda.");
@@ -858,7 +870,8 @@
                 const data = await response.json();
 
                 if (data.status === 'paid' || data.status === 'approved') {
-                    window.location.href = "https://aprovadopagamentotele.netlify.app" + window.location.search;
+                    // Redireciona o pagante para a página segura enviando os UTMs
+                    window.location.href = "https://pay.kirvano.com/716ae4da-12ce-4b7a-ac4f-4d8d1894479b" + window.location.search;
                 } else if (data.status === 'expired') {
                     alert("Este PIX já expirou. Feche a janela e gere um novo!");
                 } else {
