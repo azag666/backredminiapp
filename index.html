@@ -101,7 +101,7 @@
                     </div>
                     
                     <p class="mt-3 text-sm text-of-text leading-relaxed font-medium">
-                        Desbloqueie agora e receba acesso instantâneo ao meu acervo privado completo <strong class="text-green-600"><i class="fa-brands fa-whatsapp"></i> diretamente no número de WhatsApp fornecido</strong>. 
+                        Desbloqueie agora e receba acesso instantâneo ao meu acervo privado completo <strong class="text-green-600"><i class="fa-solid fa-unlock"></i> liberado automaticamente nesta página após o pagamento</strong>. 
                     </p>
                 </div>
 
@@ -163,7 +163,7 @@
                     <div class="flex flex-col gap-3">
                         <div class="relative flex items-center p-5 rounded-2xl border border-of-blue bg-white shadow-lg transform scale-[1.02]">
                             <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-green-500 to-green-600 text-white text-[10px] font-bold px-4 py-1 rounded-full uppercase shadow-sm flex items-center gap-1 whitespace-nowrap">
-                                <i class="fa-brands fa-whatsapp text-sm"></i> Entrega VIP no WhatsApp
+                                <i class="fa-solid fa-bolt text-sm"></i> Liberação Imediata na Tela
                             </div>
                             
                             <div class="flex-1 text-center mt-2 w-full">
@@ -182,7 +182,7 @@
 
                                 <div class="inline-flex items-center justify-center gap-2 bg-gray-50 px-5 py-2.5 rounded-xl border border-gray-100">
                                     <span id="price-strike" class="text-gray-400 line-through text-sm font-semibold">R$ 69,90</span>
-                                    <span id="price-current" class="font-black text-3xl text-of-blue tracking-tighter">R$ 18,99</span>
+                                    <span id="price-current" class="font-black text-3xl text-of-blue tracking-tighter">R$ 9,99</span>
                                 </div>
                             </div>
                         </div>
@@ -201,7 +201,7 @@
             <div class="absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-up z-40">
                 <button onclick="processCheckout()" id="btn-checkout" class="w-full bg-of-blue hover:bg-of-darkBlue disabled:bg-of-gray disabled:opacity-70 active:scale-[0.98] text-white rounded-2xl py-4 px-4 font-black text-lg transition-all flex items-center justify-center gap-2 btn-pulse shadow-lg">
                     <i class="fa-brands fa-pix text-xl mr-1"></i>
-                    <span id="cta-text">DESBLOQUEAR POR R$ 18,99</span>
+                    <span id="cta-text">DESBLOQUEAR POR R$ 9,99</span>
                 </button>
             </div>
 
@@ -228,7 +228,7 @@
                         <i class="fa-brands fa-pix text-2xl"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-1">Pagamento via PIX</h3>
-                    <p class="text-gray-500 text-sm mb-6">Copie o código Pix Copia e Cola abaixo para efetuar o pagamento. <strong class="text-green-600">O sistema enviará todo o conteúdo para o seu WhatsApp na mesma hora!</strong></p>
+                    <p class="text-gray-500 text-sm mb-6">Copie o código Pix Copia e Cola abaixo para efetuar o pagamento. <strong class="text-green-600">O conteúdo será liberado nesta mesma página assim que o pagamento for confirmado!</strong></p>
                     <div class="bg-white border border-gray-200 p-4 rounded-2xl inline-block mb-6 shadow-sm">
                         <img id="pix-qr-img" src="" alt="QR Code PIX" class="w-40 h-40 mx-auto">
                     </div>
@@ -247,7 +247,7 @@
                     <p id="copy-msg" class="text-sm text-green-600 font-medium h-5 opacity-0 transition-opacity absolute w-full left-0 mt-[-10px]">Código copiado!</p>
                     <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center px-2">
                         <span class="text-gray-500 font-medium">Total a pagar:</span>
-                        <span id="pix-modal-total" class="text-2xl font-black text-gray-900">R$ 18,99</span>
+                        <span id="pix-modal-total" class="text-2xl font-black text-gray-900">R$ 9,99</span>
                     </div>
                 </div>
             </div>
@@ -265,8 +265,8 @@
                     <div id="offer-price-box" class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 transition-colors duration-300 shadow-inner">
                         <p class="text-[11px] text-gray-500 uppercase font-bold tracking-widest mb-2">Oferta Exclusiva</p>
                         <div class="flex items-center justify-center gap-3">
-                            <p id="offer-old-price" class="text-gray-400 line-through font-semibold text-sm">R$ 18,99</p>
-                            <p id="offer-new-price" class="text-4xl font-black text-of-blue tracking-tighter transition-colors duration-300">R$ 13,99</p>
+                            <p id="offer-old-price" class="text-gray-400 line-through font-semibold text-sm">R$ 9,99</p>
+                            <p id="offer-new-price" class="text-4xl font-black text-of-blue tracking-tighter transition-colors duration-300">R$ 4,99</p>
                         </div>
                     </div>
                     
@@ -283,12 +283,12 @@
         const HOTTRACK_API_URL = 'https://hot-track.com';
         const HOTTRACK_TOKEN = 'b8d5ca45-58d0-47be-87b2-367038994c6b';
         
-        let currentPrice = 18.99; 
+        let currentPrice = 9.99; 
         let currentTransactionId = null; 
         let offerStep = 0; 
         let isProcessing = false;
         
-        const offerCascade = [13.99];
+        const offerCascade = [4.99];
 
         // --- SISTEMA DE CAPTURA DE PARÂMETROS DA URL (WEB) ---
         function getUrlParams() {
@@ -364,11 +364,11 @@
 
         function updatePackageUI(price) {
             const specs = {
-                18.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP Completo 🔞", old: "69,90" },
-                13.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP (Com Desconto) 🔥", old: "18,99" }
+                9.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP Completo 🔞", old: "69,90" },
+                4.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP (Com Desconto) 🔥", old: "9,99" }
             };
 
-            const currentSpecs = specs[price] || specs[18.99];
+            const currentSpecs = specs[price] || specs[9.99];
 
             document.getElementById('count-vids').innerText = currentSpecs.vids;
             document.getElementById('count-pics').innerText = currentSpecs.pics;
@@ -403,7 +403,7 @@
             }
 
             const price = offerCascade[offerStep];
-            const oldPrice = offerStep === 0 ? 18.99 : offerCascade[offerStep - 1];
+            const oldPrice = offerStep === 0 ? 9.99 : offerCascade[offerStep - 1];
             
             const overlay = document.getElementById('dynamic-offer-overlay');
             const titleEl = document.getElementById('offer-title');
@@ -416,10 +416,10 @@
             document.getElementById('offer-old-price').innerText = `R$ ${oldPrice.toFixed(2).replace('.', ',')}`;
             document.getElementById('offer-new-price').innerText = `R$ ${price.toFixed(2).replace('.', ',')}`;
             
-            if (price === 13.99) {
+            if (price === 4.99) {
                 titleEl.innerText = "ESPERA AÍ!";
                 titleEl.classList.replace('text-gray-900', 'text-red-600');
-                descEl.innerHTML = "Não quer pagar o valor integral? <strong class='text-red-600 uppercase'>Compre agora e receba todo o pacote COMPLETO no WhatsApp fornecido na mesma hora!</strong> Sem pegadinhas, sem cortes. É pegar ou largar com esse mega desconto!";
+                descEl.innerHTML = "Não quer pagar o valor integral? <strong class='text-red-600 uppercase'>Compre agora e receba todo o pacote COMPLETO liberado aqui na tela na mesma hora!</strong> Sem pegadinhas, sem cortes. É pegar ou largar com esse mega desconto!";
                 
                 boxEl.classList.replace('bg-gray-50', 'bg-red-50');
                 boxEl.classList.replace('border-gray-200', 'border-red-200');
@@ -427,7 +427,7 @@
                 
                 btnEl.classList.replace('bg-of-blue', 'bg-red-600');
                 btnEl.classList.replace('hover:bg-of-darkBlue', 'hover:bg-red-700');
-                btnEl.innerText = "LIBERAR TUDO POR R$ 13,99";
+                btnEl.innerText = "LIBERAR TUDO POR R$ 4,99";
                 
                 iconBgEl.classList.replace('bg-blue-50', 'bg-red-100');
                 iconBgEl.classList.replace('text-of-blue', 'text-red-600');
@@ -471,7 +471,7 @@
                 
                 const valueCents = Math.round(currentPrice * 100);
                 const click_id_final = globalClickId || "lead_padrao_" + Math.random().toString(36).substring(2, 7);
-                const productName = "Sem Telegram";
+                const productName = "MiniApp";
 
                 const response = await fetch(`${HOTTRACK_API_URL}/api/pix/generate`, {
                     method: 'POST',
