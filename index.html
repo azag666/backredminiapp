@@ -226,7 +226,7 @@
 
                                 <div class="inline-flex items-center justify-center gap-2 bg-gray-50 px-5 py-2.5 rounded-xl border border-gray-100">
                                     <span id="price-strike" class="text-gray-400 line-through text-sm font-semibold">R$ 69,90</span>
-                                    <span id="price-current" class="font-black text-3xl text-of-blue tracking-tighter">R$ 9,99</span>
+                                    <span id="price-current" class="font-black text-3xl text-of-blue tracking-tighter">R$ 19,99</span>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +245,7 @@
             <div class="absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-up z-40">
                 <button onclick="processCheckout()" id="btn-checkout" class="w-full bg-of-blue hover:bg-of-darkBlue disabled:bg-of-gray disabled:opacity-70 active:scale-[0.98] text-white rounded-2xl py-4 px-4 font-black text-lg transition-all flex items-center justify-center gap-2 btn-pulse shadow-lg">
                     <i class="fa-brands fa-pix text-xl mr-1"></i>
-                    <span id="cta-text">DESBLOQUEAR POR R$ 9,99</span>
+                    <span id="cta-text">DESBLOQUEAR POR R$ 19,99</span>
                 </button>
             </div>
 
@@ -291,7 +291,7 @@
                     <p id="copy-msg" class="text-sm text-green-600 font-medium h-5 opacity-0 transition-opacity absolute w-full left-0 mt-[-10px]">Código copiado!</p>
                     <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center px-2">
                         <span class="text-gray-500 font-medium">Total a pagar:</span>
-                        <span id="pix-modal-total" class="text-2xl font-black text-gray-900">R$ 9,99</span>
+                        <span id="pix-modal-total" class="text-2xl font-black text-gray-900">R$ 19,99</span>
                     </div>
                 </div>
             </div>
@@ -309,8 +309,8 @@
                     <div id="offer-price-box" class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 transition-colors duration-300 shadow-inner">
                         <p class="text-[11px] text-gray-500 uppercase font-bold tracking-widest mb-2">Oferta Exclusiva</p>
                         <div class="flex items-center justify-center gap-3">
-                            <p id="offer-old-price" class="text-gray-400 line-through font-semibold text-sm">R$ 9,99</p>
-                            <p id="offer-new-price" class="text-4xl font-black text-of-blue tracking-tighter transition-colors duration-300">R$ 4,99</p>
+                            <p id="offer-old-price" class="text-gray-400 line-through font-semibold text-sm">R$ 19,99</p>
+                            <p id="offer-new-price" class="text-4xl font-black text-of-blue tracking-tighter transition-colors duration-300">R$ 9,99</p>
                         </div>
                     </div>
                     
@@ -702,7 +702,7 @@
         function updatePackageUI(price) {
             const specs = {
                 9.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP Completo 🔞", old: "69,90" },
-                4.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP (Com Desconto) 🔥", old: "9,99" }
+                4.99: { vids: 70, pics: 30, hide: [], title: "Pacote VIP (Com Desconto) 🔥", old: "19,99" }
             };
 
             const currentSpecs = specs[price] || specs[9.99];
@@ -766,7 +766,7 @@
                 
                 btnEl.classList.replace('bg-of-blue', 'bg-red-600');
                 btnEl.classList.replace('hover:bg-of-darkBlue', 'hover:bg-red-700');
-                btnEl.innerText = "LIBERAR TUDO POR R$ 4,99";
+                btnEl.innerText = "LIBERAR TUDO POR R$ 9,99";
                 
                 iconBgEl.classList.replace('bg-blue-50', 'bg-red-100');
                 iconBgEl.classList.replace('text-of-blue', 'text-red-600');
